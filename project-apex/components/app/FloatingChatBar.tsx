@@ -3,7 +3,10 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { Atom, MessageSquare, Mic, Paperclip, Send } from "lucide-react";
 import { cn } from "@/components/ui/cn";
-import { Mode, ModeToggle } from "@/components/ui/ModeToggle";
+import { Mode } from "@/components/ui/ModeToggle";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 
 export default function FloatingChatBar({
   mode,
@@ -21,7 +24,8 @@ export default function FloatingChatBar({
       initial={{ y: 40, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-x-0 bottom-4 z-20 flex justify-center px-4"
+      className="fixed inset-x-0 z-20 flex justify-center px-4"
+      style={{ bottom: `max(16px, env(safe-area-inset-bottom))` }}
     >
       <div
         className={cn(
@@ -31,14 +35,18 @@ export default function FloatingChatBar({
         )}
       >
         {/* Mode switch inside the bar */}
-        <ModeToggle value={mode} onChange={onToggleMode} />
+        <div className="hidden sm:block">
+          <Switch
+            checked={mode === "agent"}
+            onCheckedChange={(v) => onToggleMode(v ? "agent" : "chat")}
+          />
+        </div>
 
         <div className="flex-1 flex items-center gap-2">
-          <button className="p-2 rounded-full hover:bg-black/5" aria-label="Attach">
+          <Button variant="ghost" size="sm" aria-label="Attach" className="rounded-full p-2 h-auto">
             <Paperclip className="h-4 w-4" />
-          </button>
-          <input
-            className="flex-1 rounded-full px-4 py-2 bg-white/60 dark:bg-white/5 border border-black/10 dark:border-white/10 focus:outline-none focus:ring-2 focus:ring-amber-300"
+          </Button>
+          <Input
             placeholder={mode === "agent" ? "Décrivez la tâche à exécuter…" : "Écrire un message…"}
             value={value}
             onChange={(e) => setValue(e.target.value)}
@@ -52,14 +60,13 @@ export default function FloatingChatBar({
               }
             }}
           />
-          <button className="p-2 rounded-full hover:bg-black/5" aria-label="Mic">
+          <Button variant="ghost" size="sm" aria-label="Mic" className="rounded-full p-2 h-auto">
             <Mic className="h-4 w-4" />
-          </button>
-          <button
-            className={cn(
-              "inline-flex items-center gap-2 rounded-full px-3 py-2 border",
-              "border-black/10 dark:border-white/10 hover:bg-amber-500/10"
-            )}
+          </Button>
+          <Button
+            variant="outline"
+            size="md"
+            className="gap-2 rounded-full"
             onClick={() => {
               if (value.trim()) {
                 onSend(value.trim());
@@ -69,7 +76,7 @@ export default function FloatingChatBar({
           >
             <Send className="h-4 w-4" />
             <span className="hidden sm:inline">Envoyer</span>
-          </button>
+          </Button>
         </div>
 
         {/* Mode emblem */}
@@ -80,4 +87,3 @@ export default function FloatingChatBar({
     </motion.div>
   );
 }
-
